@@ -1,0 +1,27 @@
+name: 'Build'
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+      
+      - run: chmod +x ./gradlew
+      - run: ./gradlew build --no-daemon
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/libs/glue-1.0-SNAPSHOT.jar
